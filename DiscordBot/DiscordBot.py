@@ -19,7 +19,7 @@ import youtube_dl
 #環境変数DISCORD_TOKEN取得
 #discord_tokenは環境変数に名称は何でもいいけどとりあえずDISCORD_TOKENの名前で追加して取得
 #TOKEN_D=os.environ.get('DISCORD_TOKEN')
-TOKEN_D="MTAzMDc4ODg0OTkxNzUwNTY0Nw.GdnFxn._oZuu6Lp_3MpevFjAfRrgHIkhdX0cJsnLJxD1A"
+TOKEN_D="MTAzMDc4ODg0OTkxNzUwNTY0Nw.GnlIVx.lQpyq-QeSDNWARjBUQFC91X_Uv7fHol-aC7UDU"
 name5go_id=377632130718498826#bot制作者のdiscordアカウントID、強制終了コマンド this_end を実装しているので作成者以外実行できないようにするため
 
 #discord用
@@ -233,9 +233,14 @@ class MyView(discord.ui.View): # Create a class called MyView that subclasses di
             await member.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))  
     
 
-
 @bot.slash_command()
 async def create_category(ctx: discord.Interaction, category_name:Option(str, '入力した名前のカテゴリで、その内部にVC及び聞き専チャットを自動作成')):
+
+    if ctx.author.avatar is not None:
+        avatar_url=ctx.author.avatar.url
+    else:
+        avatar_url="https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg"
+
     """通話チャンネルの作成"""
     if is_joined_user(ctx):
         await ctx.respond("コマンド入力者がVCに接続していないとコマンド実行できません")
@@ -245,7 +250,7 @@ async def create_category(ctx: discord.Interaction, category_name:Option(str, '�
         await ctx.respond('チャンネルID'+str(channel_id)+'ではこのコマンドは実行できないよ！カテゴリ追加用VCに参加してそこでもう一度実行してください')
         return
     if category_name in server_call_list:
-        em=set_embed_for_call(category_name,"https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg","カテゴリー"+category_name+"は既に作成済みだよ！\nそういうわけではないなら別の名称でカテゴリ作成してね\nもしかして"+category_name+"に参加したいなら下の***___参加する___***ボタンを押してね",ctx)
+        em=set_embed_for_call(category_name,avatar_url,"カテゴリー"+category_name+"は既に作成済みだよ！\nそういうわけではないなら別の名称でカテゴリ作成してね\nもしかして"+category_name+"に参加したいなら下の***___参加する___***ボタンを押してね",ctx)
         await ctx.respond(embed=em, view=MyView(category_name))
         return
 
@@ -258,7 +263,7 @@ async def create_category(ctx: discord.Interaction, category_name:Option(str, '�
 
     await ctx.author.move_to(discord.utils.get(ctx.guild.voice_channels, id=server_call_list[category_name]['vc']))
 
-    em=set_embed_for_call(category_name,"https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg",ctx.author.mention+"がカテゴリー"+category_name+"を作成してくれたよ！\n参加したい人は下の***___参加する___***ボタンを押してね",ctx)
+    em=set_embed_for_call(category_name,avatar_url,ctx.author.mention+"がカテゴリー"+category_name+"を作成してくれたよ！\n参加したい人は下の***___参加する___***ボタンを押してね",ctx)
     await ctx.respond(embed=em, view=MyView(category_name)) 
 
     
