@@ -5,6 +5,7 @@ urlが画像取得のできるurlか調べる関数は実装しないかも
 """
 
 #終了コマンド用
+from pickle import TRUE
 import sys
 #文字列チェック
 import re
@@ -13,18 +14,18 @@ import os
 #youtubeくん！
 import youtube_dl
 #urlのタイトル取得
-import urllib.request
-from bs4 import BeautifulSoup
+#import urllib.request
+#from bs4 import BeautifulSoup
 #環境変数DISCORD_TOKEN取得
 #discord_tokenは環境変数に名称は何でもいいけどとりあえずDISCORD_TOKENの名前で追加して取得
-TOKEN_D=os.environ.get('DISCORD_TOKEN')
+#TOKEN_D=os.environ.get('DISCORD_TOKEN')
+TOKEN_D="MTAzMDc4ODg0OTkxNzUwNTY0Nw.GdnFxn._oZuu6Lp_3MpevFjAfRrgHIkhdX0cJsnLJxD1A"
 name5go_id=377632130718498826#bot制作者のdiscordアカウントID、強制終了コマンド this_end を実装しているので作成者以外実行できないようにするため
 
 #discord用
 import discord
 from discord.commands import Option
 from discord.ext import pages
-
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,6 +36,10 @@ bot = discord.Bot(intents=intents)
 #連想型配列、ここにサーバー名でdict型配列をまた作りその中に登録する情報を保存していく
 server_pic_list={}
 server_music_list={}
+
+server_call_list={}
+
+useChID=1082307099398242307
 
 #server_pic_listへの操作時にbotの送信するEmbedを整備する
 def set_embed_for_pic(
@@ -50,6 +55,30 @@ def set_embed_for_pic(
                         color=title_color,#横の色
                         description=add_description,#ちいこい説明
                         url=add_url,#タイトル文字列に格納するurl
+                        )
+
+    embed.set_thumbnail(url=add_url)
+
+    return embed
+
+#server_pic_listへの操作時にbotの送信するEmbedを整備する
+def set_embed_for_call(
+                      add_word,#登録処理時の文字列
+                      add_url,#同上のurl
+                      add_description,#同上のちいこい説明
+                      ctx
+                      ):
+
+    #embedへの登録処理
+    title_color=0x00ff00#greenを登録
+
+    channel_id=server_call_list[add_word]["vc"]
+    guild_id=ctx.guild.id
+
+    embed=discord.Embed(title="***___"+add_word+"___***",#タイトル
+                        color=title_color,#横の色
+                        description=add_description,#ちいこい説明
+                        url=f"https://discord.com/channels/{guild_id}/{channel_id}",#タイトル文字列に格納するurl
                         )
 
     embed.set_thumbnail(url=add_url)
@@ -114,6 +143,8 @@ def where_url(url):
         return youtube
     return no
 
+#class Commands
+
 #bot作成者のアカウントＩＤ以外では動かないようにしたい
 @bot.slash_command()
 async def this_end(ctx):
@@ -133,18 +164,16 @@ async def this_end(ctx):
 @bot.slash_command()
 async def unko_suru(ctx):
     """うんこします"""
-    """
     await ctx.respond('うんこします')
     await ctx.send('ぶりっ')
-    """    
         
-    
+    """
     await ctx.defer()
     test_pages = ['Page-One', 'Page-Two', 'Page-Three', 'Page-Four', 'Page-Five']
     paginator = pages.Paginator(pages=test_pages)
     #await ctx.respond(paginator)
     await paginator.send(ctx)
-    
+    """
     """
     if ctx.author.guild_permissions.administrator:
         await ctx.respond('管理者かぁ？おまえがうんこしろよ！！！')
@@ -190,6 +219,68 @@ async def dic_server_st(ctx,
     else:
         await ctx.respond('コマンドの後にtrueかfalseを入力したら有効無効の切り替えができるよ！')
 
+
+class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
+    def __init__(self, name):
+        super().__init__()
+        self.name = name
+    @discord.ui.button(label="参加する", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
+    async def button_callback(self, button, interaction):
+        await interaction.response.send_message("You clicked the button!"+self.name) # Send a message when the button is clicked
+        await interaction.user.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))
+    
+
+
+@bot.slash_command()
+async def create_category(ctx: discord.Interaction, category_name:Option(str, '入力した名前のカテゴリで、その内部にVC及び聞き専チャットを自動作成')):
+    """通話チャンネルの作成"""
+    if is_joined_user(ctx):
+        await ctx.respond("コマンド入力者がVCに接続していないとコマンド実行できません")
+        return
+    channel_id = ctx.channel_id
+    if channel_id!=useChID:
+        await ctx.respond('チャンネルID'+str(channel_id)+'ではこのコマンドは実行できないよ！カテゴリ追加用VCに参加してそこでもう一度実行してください')
+        return
+    if category_name in server_call_list:
+        em=set_embed_for_call(category_name,"https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg","カテゴリー"+category_name+"は既に作成済みだよ！\nそういうわけではないなら別の名称でカテゴリ作成してね\nもしかして"+category_name+"に参加したいなら下の***___参加する___***ボタンを押してね",ctx)
+        await ctx.respond(embed=em, view=MyView(category_name))
+        return
+
+    category=await ctx.guild.create_category(name=category_name)
+    await category.create_text_channel(name=category_name+"聞き専")
+    await category.create_voice_channel(name=category_name+"VC")
+
+    category_dict={'category':category.id,'txt':category.text_channels[0].id,'vc':category.voice_channels[0].id}
+    server_call_list[category_name]=category_dict
+
+    await ctx.author.move_to(discord.utils.get(ctx.guild.voice_channels, id=server_call_list[category_name]['vc']))
+
+    em=set_embed_for_call(category_name,"https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg",ctx.author.mention+"がカテゴリー"+category_name+"を作成してくれたよ！\n参加したい人は下の***___参加する___***ボタンを押してね",ctx)
+    await ctx.respond(embed=em, view=MyView(category_name)) 
+
+    
+@bot.slash_command()
+async def delete_category(ctx: discord.Interaction, category_name:Option(str, '入力した名前のカテゴリで')):
+    category=await ctx.guild.create_category(name=category_name)
+    #await category.delete()
+    for channel in category.channels:
+      await channel.delete()
+    # カテゴリーを削除する
+    await category.delete()
+    return
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    category_name=before.channel.category.name
+    if len(before.channel.members) ==0 and category_name!=bot.get_channel(useChID).category.name:
+        delchid=server_call_list[category_name]["vc"]
+        if delchid!=useChID:
+            await bot.get_channel(useChID).send(category_name+"カテゴリは誰もいなくなったから削除するよ")
+            await bot.get_channel(server_call_list[category_name]["vc"]).delete()
+            await bot.get_channel(server_call_list[category_name]["txt"]).delete()
+            await bot.get_channel(server_call_list[category_name]["category"]).delete()
+            del server_call_list[category_name]
+    return
 
 #画像を文字列に登録。引数は単語、画像url
 @bot.slash_command()

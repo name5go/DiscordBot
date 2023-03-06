@@ -5,8 +5,7 @@
     <ProjectGuid>{661cff4f-d295-44eb-b303-41b0c85c6d6c}</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>DiscordBot.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DiscordBot.py" />
+    <Compile Include="PhotoLib.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
