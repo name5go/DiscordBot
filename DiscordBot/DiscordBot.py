@@ -226,8 +226,11 @@ class MyView(discord.ui.View): # Create a class called MyView that subclasses di
         self.name = name
     @discord.ui.button(label="参加する", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
     async def button_callback(self, button, interaction):
-        await interaction.response.send_message("You clicked the button!"+self.name) # Send a message when the button is clicked
-        await interaction.user.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))
+        member = interaction.user
+        if member.voice is None:
+            await interaction.response.send_message(self.name+"に「参加する」ボタンから参加するなら一度カテゴリ追加用VCに接続してから押してね") # Send a message when the button is clicked
+        else:
+            await member.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))  
     
 
 
@@ -271,15 +274,17 @@ async def delete_category(ctx: discord.Interaction, category_name:Option(str, '�
 
 @bot.event
 async def on_voice_state_update(member, before, after):
-    category_name=before.channel.category.name
-    if len(before.channel.members) ==0 and category_name!=bot.get_channel(useChID).category.name:
-        delchid=server_call_list[category_name]["vc"]
-        if delchid!=useChID:
-            await bot.get_channel(useChID).send(category_name+"カテゴリは誰もいなくなったから削除するよ")
-            await bot.get_channel(server_call_list[category_name]["vc"]).delete()
-            await bot.get_channel(server_call_list[category_name]["txt"]).delete()
-            await bot.get_channel(server_call_list[category_name]["category"]).delete()
-            del server_call_list[category_name]
+    if before.channel is not None:
+        category_name=before.channel.category.name
+        if len(before.channel.members) ==0 and category_name!=bot.get_channel(useChID).category.name:
+            delchid=server_call_list[category_name]["vc"]
+            if delchid!=useChID:
+                await bot.get_channel(useChID).send(category_name+"カテゴリは誰もいなくなったから削除するよ")
+                await bot.get_channel(server_call_list[category_name]["vc"]).delete()
+                await bot.get_channel(server_call_list[category_name]["txt"]).delete()
+                await bot.get_channel(server_call_list[category_name]["category"]).delete()
+                del server_call_list[category_name]
+
     return
 
 #画像を文字列に登録。引数は単語、画像url
