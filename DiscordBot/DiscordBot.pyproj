@@ -5,7 +5,7 @@
     <ProjectGuid>{661cff4f-d295-44eb-b303-41b0c85c6d6c}</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>DiscordBot.py</StartupFile>
+    <StartupFile>sources\BotMain.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,8 +22,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DiscordBot.py" />
-    <Compile Include="PhotoLib.py" />
+    <Compile Include="sources\000DiscordBot.py" />
+    <Compile Include="sources\Checker.py" />
+    <Compile Include="sources\CommandsVoiceChat.py" />
+    <Compile Include="sources\CommandsMusic.py" />
+    <Compile Include="sources\CommandsPhotoReply.py" />
+    <Compile Include="sources\CreateContets.py" />
+    <Compile Include="sources\BotMain.py" />
+    <Compile Include="sources\SetupDiscordBot.py" />
+    <Compile Include="sources\CommandsSystem.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="sources\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

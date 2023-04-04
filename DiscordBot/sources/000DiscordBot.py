@@ -7,8 +7,7 @@ urlが画像取得のできるurlか調べる関数は実装しないかも
 #終了コマンド用
 from pickle import TRUE
 import sys
-#文字列チェック
-import re
+
 #環境変数取得用
 import os
 #youtubeくん！
@@ -18,174 +17,49 @@ import youtube_dl
 #from bs4 import BeautifulSoup
 #環境変数DISCORD_TOKEN取得
 #discord_tokenは環境変数に名称は何でもいいけどとりあえずDISCORD_TOKENの名前で追加して取得
-#TOKEN_D=os.environ.get('DISCORD_TOKEN')
-TOKEN_D="MTAzMDc4ODg0OTkxNzUwNTY0Nw.GnlIVx.lQpyq-QeSDNWARjBUQFC91X_Uv7fHol-aC7UDU"
+TOKEN_D=os.environ.get('DISCORD_TOKEN')
 name5go_id=377632130718498826#bot制作者のdiscordアカウントID、強制終了コマンド this_end を実装しているので作成者以外実行できないようにするため
 
 #discord用
 import discord
 from discord.commands import Option
 from discord.ext import pages
+from discord.ext import commands
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = discord.Bot(intents=intents)
-
+#bot = commands.Bot(command_prefix='!')
 
 #連想型配列、ここにサーバー名でdict型配列をまた作りその中に登録する情報を保存していく
-server_pic_list={}
-server_music_list={}
 
-server_call_list={}
+
+
+
 
 useChID=1082307099398242307
 
-#server_pic_listへの操作時にbotの送信するEmbedを整備する
-def set_embed_for_pic(
-                      add_word,#登録処理時の文字列
-                      add_url,#同上のurl
-                      add_description,#同上のちいこい説明
-                      ):
 
-    #embedへの登録処理
-    title_color=0x00ff00#greenを登録
 
-    embed=discord.Embed(title=add_word,#タイトル
-                        color=title_color,#横の色
-                        description=add_description,#ちいこい説明
-                        url=add_url,#タイトル文字列に格納するurl
-                        )
 
-    embed.set_thumbnail(url=add_url)
 
-    return embed
 
-#server_pic_listへの操作時にbotの送信するEmbedを整備する
-def set_embed_for_call(
-                      add_word,#登録処理時の文字列
-                      add_url,#同上のurl
-                      add_description,#同上のちいこい説明
-                      ctx
-                      ):
 
-    #embedへの登録処理
-    title_color=0x00ff00#greenを登録
-
-    channel_id=server_call_list[add_word]["vc"]
-    guild_id=ctx.guild.id
-
-    embed=discord.Embed(title="***___"+add_word+"___***",#タイトル
-                        color=title_color,#横の色
-                        description=add_description,#ちいこい説明
-                        url=f"https://discord.com/channels/{guild_id}/{channel_id}",#タイトル文字列に格納するurl
-                        )
-
-    embed.set_thumbnail(url=add_url)
-
-    return embed
-
-#画像および音楽系の関数のためのlist機能が送るためのページネーションを整備
-def set_pic_list_pagenator(
-                           server_id,
-                           ):
-    pic_page=(list(server_pic_list[server_id].keys()))
-    paginator = pages.Paginator(pages=pic_page)
-
-    return paginator
 
 
 #server_music_listの操作時に
 
-#チェック系の関数↓
-#文字列がurlの書式かどうか調べる
-def is_url(url):
-    pattern = "https?://[\w/:%#\$&\?\(\)~\.=\+\-]+"
-    if re.match (pattern, url):
-        return True
-    else:
-        return False
-
-#文字列がサーバー辞書に登録されているか
-def is_added_word(server_id,word):
-    if word in server_pic_list[server_id]:
-        return True
-    else:
-        return False
-
-#サーバーIDがdic_listに登録されているか調べる
-def is_added_server_id(server_id):
-    result=server_id in server_pic_list
-    if result:
-        return True
-    else:
-        return False
-
-#コマンド実行者ががボイスチャンネルに加入しているか調べる
-def is_joined_user(ctx):
-    if ctx.author.voice is None:
-        return True
-    else:
-        return False
-
-#BOTがボイスチャンネルに加入しているか調べる
-def is_joined_bot(ctx):
-    if ctx.guild.voice_client is None:
-        return True
-    else:
-        return False
-
-#どこのurlか調べる
-def where_url(url):
-    youtube="youtube"
-    no="not applied"
-    if re.match(youtube, url):
-        return youtube
-    return no
-
-#class Commands
-
-#bot作成者のアカウントＩＤ以外では動かないようにしたい
-@bot.slash_command()
-async def this_end(ctx):
-    """終了します(bot作成者以外実行不可)"""
-    if ctx.author.id==name5go_id:
-        await ctx.respond('終了します')
-        server_pic_list.clear()
-        await bot.close()
-        sys.exit()
-    if ctx.author.guild_permissions.administrator:
-        await ctx.respond('管理者でもbot作成者じゃないと実行できないにょーんw')
-        return
-    else:
-        await ctx.respond('bot作成者じゃないと実行できないにょーんw')    
 
 
-@bot.slash_command()
-async def unko_suru(ctx):
-    """うんこします"""
-    await ctx.respond('うんこします')
-    await ctx.send('ぶりっ')
-        
-    """
-    await ctx.defer()
-    test_pages = ['Page-One', 'Page-Two', 'Page-Three', 'Page-Four', 'Page-Five']
-    paginator = pages.Paginator(pages=test_pages)
-    #await ctx.respond(paginator)
-    await paginator.send(ctx)
-    """
-    """
-    if ctx.author.guild_permissions.administrator:
-        await ctx.respond('管理者かぁ？おまえがうんこしろよ！！！')
-        return
-    else:
-        await ctx.respond('うんこします')
-        await ctx.send('ぶりっ')
-        """
 
-#サーバーIDと同名の辞書リストを作成しdict型server_list{}に追加します
-#pythonの処理的に重複処理時に既存の内容が多分全部初期化されちゃうかもなので
-#trueでもfalseでも一応リストに登録済みかどうか調べて安全を図ってる
+
+
+
+
+
+
+
 @bot.slash_command()
 async def dic_server_st(ctx,
                      server_st:Option(str, 'trueで有効、falseでこのサーバーの登録情報をすべて消し無効にする', choices=['true', 'false']),
@@ -221,27 +95,43 @@ async def dic_server_st(ctx,
 
 
 class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
-    def __init__(self, name):
+    def __init__(self, name,user_id):
         super().__init__()
         self.name = name
-    @discord.ui.button(label="参加する", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
-    async def button_callback(self, button, interaction):
+        self.user_id=user_id
+
+
+    @discord.ui.button(label="カテゴリ参加", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
+    async def first_button_callback(self, button, interaction):
         member = interaction.user
         if member.voice is None:
             await interaction.response.send_message(self.name+"に「参加する」ボタンから参加するなら一度カテゴリ追加用VCに接続してから押してね") # Send a message when the button is clicked
         else:
             await member.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))  
+
+    @discord.ui.button(label="カテゴリ解散", style=discord.ButtonStyle.danger, emoji="🤫") # Create a button with the label "😎 Click me!" with color Blurple
+    async def second_button_callback(self, button, interaction):
+        member = interaction.user
+        if member.id==self.user_id:
+            await bot.get_channel(useChID).send(self.name+"カテゴリを削除するよ")
+            voice_channel = bot.get_channel(server_call_list[self.name]["vc"])
+            for member in voice_channel.members:
+               await member.move_to(None)
+        else:
+            member = await interaction.guild.fetch_member(self.user_id)
+            nickname = member.nick or member.name
+            await interaction.response.send_message(self.name+"の強制解散ができるのは"+str(nickname)+"だけだよ") # Send a message when the button is clicked
     
 
 @bot.slash_command()
 async def create_category(ctx: discord.Interaction, category_name:Option(str, '入力した名前のカテゴリで、その内部にVC及び聞き専チャットを自動作成')):
+    """通話チャンネルの作成"""
 
     if ctx.author.avatar is not None:
         avatar_url=ctx.author.avatar.url
     else:
         avatar_url="https://i.gyazo.com/a183e43bafd521a540a754b845d2c501.jpg"
 
-    """通話チャンネルの作成"""
     if is_joined_user(ctx):
         await ctx.respond("コマンド入力者がVCに接続していないとコマンド実行できません")
         return
@@ -250,8 +140,8 @@ async def create_category(ctx: discord.Interaction, category_name:Option(str, '�
         await ctx.respond('チャンネルID'+str(channel_id)+'ではこのコマンドは実行できないよ！カテゴリ追加用VCに参加してそこでもう一度実行してください')
         return
     if category_name in server_call_list:
-        em=set_embed_for_call(category_name,avatar_url,"カテゴリー"+category_name+"は既に作成済みだよ！\nそういうわけではないなら別の名称でカテゴリ作成してね\nもしかして"+category_name+"に参加したいなら下の***___参加する___***ボタンを押してね",ctx)
-        await ctx.respond(embed=em, view=MyView(category_name))
+        em=set_embed_for_call(category_name,avatar_url,"カテゴリー"+category_name+"は既に作成済みだよ！\n別の名称でカテゴリ作成してね\nもしかして"+category_name+"に参加したいの？なら下の***___参加する___***ボタンを押してね",ctx)
+        await ctx.respond(embed=em, view=MyView(category_name,ctx.author.id))
         return
 
     category=await ctx.guild.create_category(name=category_name)
@@ -264,7 +154,7 @@ async def create_category(ctx: discord.Interaction, category_name:Option(str, '�
     await ctx.author.move_to(discord.utils.get(ctx.guild.voice_channels, id=server_call_list[category_name]['vc']))
 
     em=set_embed_for_call(category_name,avatar_url,ctx.author.mention+"がカテゴリー"+category_name+"を作成してくれたよ！\n参加したい人は下の***___参加する___***ボタンを押してね",ctx)
-    await ctx.respond(embed=em, view=MyView(category_name)) 
+    await ctx.respond(embed=em, view=MyView(category_name,ctx.author.id)) 
 
     
 @bot.slash_command()
@@ -283,7 +173,7 @@ async def on_voice_state_update(member, before, after):
         category_name=before.channel.category.name
         if len(before.channel.members) ==0 and category_name!=bot.get_channel(useChID).category.name:
             delchid=server_call_list[category_name]["vc"]
-            if delchid!=useChID:
+            if delchid!=useChID and server_call_list[category_name]is not None:
                 await bot.get_channel(useChID).send(category_name+"カテゴリは誰もいなくなったから削除するよ")
                 await bot.get_channel(server_call_list[category_name]["vc"]).delete()
                 await bot.get_channel(server_call_list[category_name]["txt"]).delete()
@@ -401,6 +291,7 @@ async def dic_respond_pic(message):
 
 
 
+
 """
 ここから音楽再生機能用のコマンドとか関数とか
 """
@@ -467,4 +358,13 @@ async def dc_play(ctx,
         return 
         
 #bot起動
+
+from unko import unkoooo
+
+def setup(bot):
+   bot.add_cog(unkoooo(bot))
+  
+
+print("Hello, World!")
+setup(bot)
 bot.run(TOKEN_D)
