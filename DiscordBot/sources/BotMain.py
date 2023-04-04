@@ -3,10 +3,10 @@
 #bot起動用
 from SetupDiscordBot import SetupBot
 #コマンド用クラスのインポート
-from CommandsSystem import System
+from CommandsSystem     import System
 from CommandsPhotoReply import PhotoReply
-from CommandsVoiceChat import VoiceChat
-from CommandsMusic import Music
+from CommandsVoiceChat  import VoiceChat
+from CommandsMusic      import Music
 
 def main():
  """エントリーポイント"""

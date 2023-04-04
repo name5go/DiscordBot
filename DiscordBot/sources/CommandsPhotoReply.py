@@ -18,11 +18,6 @@ class PhotoReply(commands.Cog):
   """サーバーIDがdic_listに登録されているか調べる"""
   return server_id in self.server_pic_list
 
- @commands.slash_command(name='うんこします', description='ぶりっ')
- async def unkooooo(self,ctx):
-    await ctx.respond('うんこします')
-    await ctx.send('ぶりっ')
-
  @commands.slash_command(name='画像返信機能を有効', description='画像返信機能を有効')
  async def dic_server_st(ctx,
                      server_st:Option(str, 'trueで有効、falseでこのサーバーの登録情報をすべて消し無効にする', choices=['true', 'false']),
