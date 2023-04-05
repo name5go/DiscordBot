@@ -33,9 +33,12 @@ class System(commands.Cog):
  @commands.slash_command(name='z_‚¤‚ñ‚±‚µ‚Ü‚·', description='‚Ô‚è‚Á')
  async def unko_suru(self,ctx):
    """‚¤‚ñ‚±‚µ‚Ü‚·"""
-   await ctx.respond('‚¤‚ñ‚±‚µ‚Ü‚·')
+   await ctx.respond('‚¤‚ñ‚±‚µ‚Ü‚·', delete_after=0)
    await ctx.send('‚Ô‚è‚Á')
-   await ctx.channel.send(str(ctx.guild.get_channel(1082307099398242306)))
+   sent=await ctx.channel.send(str(ctx.guild.get_channel(1082307099398242306)))
+   iddd=sent.id
+   message_obj=await ctx.channel.fetch_message(iddd)
+   await message_obj.delete()
    dm=await ctx.author.create_dm()
    await dm.send('‚Ô‚è‚Á')
 

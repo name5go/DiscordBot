@@ -1,8 +1,8 @@
 # -*- coding: Shift-JIS -*-
 
-from unittest import expectedFailure
 from discord.ext import commands
 from discord.commands import Option
+from CreateContets import CreateContets
 import openai
 import asyncio
 
@@ -14,6 +14,8 @@ openai.api_key=os.environ.get('OPENAI_TOKEN')
 class ChatAI(commands.Cog):
  def __init__(self, bot):
   self.bot = bot  
+  self.creater=CreateContets()
+
   self.prompt = "「ずんだもん」という名前の可愛い女の子のキャラクターがいる。そのキャラは語尾が「なのだ」、一人称は「ぼく」が特徴のキャラクターだ。自己紹介は不要です。この文以降の返信をしてほしい、だが前述のキャラクターになりきって返信して。"
   self.temperature = 0.5
   self.engine="text-davinci-002"
@@ -32,21 +34,25 @@ class ChatAI(commands.Cog):
   return
 
  @commands.slash_command(name='a_aiずんだもんの設定', description='術式の開示という縛りで呪力の強化を行うわけか...肝心の術式が弱すぎる!?')
- async def ai_settei(self):
-  await self.ctx.respond("ジージー...ッガガガ...通信中なのだ...")
+ async def ai_settei(self,ctx):
+
+  await ctx.respond(self.prompt)
 
  @commands.slash_command(name='a_aiずんだもんと会話', description='AIと会話。限界はわからん')
  async def talk_ai(self,ctx,
                    message:Option(str, 'メッセージ')
                    ):
-  await ctx.respond(self.prompt)
+  respond=await ctx.respond("process...", delete_after=0)
+  emb=self.creater.set_embed(ctx,str(ctx.author.name)+"が送信したメッセージ["+message+"]への返信を考えているよ","a","ジージー...ッガガガ...通信中なのだ...","https://i.gyazo.com/f493aff882c43bea1b494cb1a2cf9e97.png")
+  sent_message=await ctx.send(embed=emb)
+  sent_id=sent_message.id
   try:
-   await asyncio.wait_for(self.reply(ctx,message), timeout=10)
+   await asyncio.wait_for(self.reply(ctx,message,sent_id), timeout=1000000)
   except asyncio.TimeoutError:
    await ctx.respond("Command timed out!")
 
 
- async def reply(self,ctx,message):
+ async def reply(self,ctx,message,message_id):
   obj={"role":"user","content":message}
   self.add_messages_history(obj)
   response = openai.ChatCompletion.create(
@@ -57,4 +63,7 @@ class ChatAI(commands.Cog):
   reply=str(response['choices'][0]['message']['content'])
   obj={"role":"assistant","content":reply}
   self.add_messages_history(obj)
-  await ctx.send(reply)
+  emb=self.creater.set_embed(ctx,str(ctx.author.name)+"さんのメッセージ ["+message+"] へのreplyなのだ！","reply",reply,"https://i.gyazo.com/ea6a503753a58a1b4929a077298d60cb.png")
+  message_obj=await ctx.channel.fetch_message(message_id)
+  await message_obj.delete()
+  await ctx.send(embed=emb)
