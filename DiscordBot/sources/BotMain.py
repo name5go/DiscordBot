@@ -7,21 +7,33 @@ from CommandsSystem     import System
 from CommandsPhotoReply import PhotoReply
 from CommandsVoiceChat  import VoiceChat
 from CommandsMusic      import Music
+from CommandsChatAI     import ChatAI
 
-def main():
- """エントリーポイント"""
- setup=SetupBot()
+class BotMain():
+ def __init__(self):
+  self.add_commands_list=[]
+
+ def main(self):
+  """エントリーポイント"""
+  setup=SetupBot()
  
 #コマンド用クラスのインポート
- setup.add(System)
- setup.add(PhotoReply)
- setup.add(VoiceChat)
- setup.add(Music)
+  self.add_commands_list.append(System)
+  self.add_commands_list.append(PhotoReply)
+  self.add_commands_list.append(VoiceChat)
+  self.add_commands_list.append(Music)
+  self.add_commands_list.append(ChatAI)
+  
+  for com in self.add_commands_list:
+   setup.add(com)
+   print('コマンドリスト'+str(com)+"を登録しました")
 
-#botの起動
- print("botは正常に起動できました")
- setup.run_bot()
+ #botの起動
+  print("botを起動します")
+  setup.run_bot()
  
 
+
 if __name__ == '__main__':
-    main()
+    bot=BotMain()
+    bot.main()

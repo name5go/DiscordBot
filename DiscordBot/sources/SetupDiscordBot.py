@@ -14,6 +14,9 @@ class SetupBot():
   self.intents.message_content = True
   self.bot=discord.Bot(intents=self.intents)
   self.cog_list=[]
+ 
+ def get_bot(self):
+  return self.bot
 
  def add(self,com_class):
    """コマンドクラスを追加"""
@@ -23,4 +26,5 @@ class SetupBot():
   """cog_listの中身をdiscord側に登録して起動"""
   for cogs in self.cog_list:
    self.bot.add_cog(cogs(self.bot))
+  self.cog_list.clear()
   self.bot.run(os.environ.get('DISCORD_TOKEN'))

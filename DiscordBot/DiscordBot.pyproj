@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="sources\000DiscordBot.py" />
     <Compile Include="sources\Checker.py" />
+    <Compile Include="sources\CommandsChatAI.py" />
     <Compile Include="sources\CommandsVoiceChat.py" />
     <Compile Include="sources\CommandsMusic.py" />
     <Compile Include="sources\CommandsPhotoReply.py" />

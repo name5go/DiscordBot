@@ -60,67 +60,9 @@ useChID=1082307099398242307
 
 
 
-@bot.slash_command()
-async def dic_server_st(ctx,
-                     server_st:Option(str, 'trueで有効、falseでこのサーバーの登録情報をすべて消し無効にする', choices=['true', 'false']),
-                     ):#server_st: Option(bool,'このサーバーで有効にするか',choices=['true', 'false'])
-    """このbotをサーバーで有効にする"""
-    server_id = ctx.guild.id
-    server_name = ctx.guild.name
-    #bool result =サーバーIDが連想配列に登録されているか調べる
-    result=is_added_server_id(server_id)
-    #有効化
-    if server_st=='true':
-        #リスト型にサーバーIDが登録されていなければ処理を実行する
-        if result==True:
-            await ctx.respond('サーバー名['+str(server_name)+']でこのbotはすでに有効です')
-            return
-        #登録されていなかったのでサーバーID名で作ったdict型のオブジェクトをリストに追加する
-        await ctx.respond('サーバー名['+str(server_name)+']でこのbotを有効にします')
-        await ctx.send('dict型「サーバーID['+str(server_id)+']」オブジェクトをdict[server_list]に追加しました')
-        server_pic_list[server_id]={}
-    #無効化
-    elif server_st=='false':
-        #リスト型にサーバーIDが登録されていれば処理を実行する
-        if result==False:
-            await ctx.respond('サーバー名['+str(server_name)+']では既にこのbotは無効です')
-            return
-        await ctx.respond('サーバー名['+str(server_name)+']でこのbotを無効にします')
-        await ctx.send('dict型「サーバーID['+str(server_id)+']」オブジェクトをlistから削除しました')
-        del server_pic_list[server_id]
-    #discord.pyで作成していた際のtrueとfalse以外の文字列が引数に投げられていた場合の処理
-    #pycordに切り替えて引数のオプションの設定もしたので万が一にも無いとは思うが一応残しとく
-    else:
-        await ctx.respond('コマンドの後にtrueかfalseを入力したら有効無効の切り替えができるよ！')
 
 
-class MyView(discord.ui.View): # Create a class called MyView that subclasses discord.ui.View
-    def __init__(self, name,user_id):
-        super().__init__()
-        self.name = name
-        self.user_id=user_id
 
-
-    @discord.ui.button(label="カテゴリ参加", style=discord.ButtonStyle.primary, emoji="😎") # Create a button with the label "😎 Click me!" with color Blurple
-    async def first_button_callback(self, button, interaction):
-        member = interaction.user
-        if member.voice is None:
-            await interaction.response.send_message(self.name+"に「参加する」ボタンから参加するなら一度カテゴリ追加用VCに接続してから押してね") # Send a message when the button is clicked
-        else:
-            await member.move_to(discord.utils.get(interaction.guild.voice_channels, id=server_call_list[self.name]['vc']))  
-
-    @discord.ui.button(label="カテゴリ解散", style=discord.ButtonStyle.danger, emoji="🤫") # Create a button with the label "😎 Click me!" with color Blurple
-    async def second_button_callback(self, button, interaction):
-        member = interaction.user
-        if member.id==self.user_id:
-            await bot.get_channel(useChID).send(self.name+"カテゴリを削除するよ")
-            voice_channel = bot.get_channel(server_call_list[self.name]["vc"])
-            for member in voice_channel.members:
-               await member.move_to(None)
-        else:
-            member = await interaction.guild.fetch_member(self.user_id)
-            nickname = member.nick or member.name
-            await interaction.response.send_message(self.name+"の強制解散ができるのは"+str(nickname)+"だけだよ") # Send a message when the button is clicked
     
 
 @bot.slash_command()
