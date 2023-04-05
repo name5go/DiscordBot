@@ -33,7 +33,7 @@ class ChatAI(commands.Cog):
 
  @commands.slash_command(name='a_aiずんだもんの設定', description='術式の開示という縛りで呪力の強化を行うわけか...肝心の術式が弱すぎる!?')
  async def ai_settei(self):
-  await self.ctx.respond("考え中なのだ！")
+  await self.ctx.respond("ジージー...ッガガガ...通信中なのだ...")
 
  @commands.slash_command(name='a_aiずんだもんと会話', description='AIと会話。限界はわからん')
  async def talk_ai(self,ctx,
