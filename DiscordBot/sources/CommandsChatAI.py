@@ -3,9 +3,10 @@
 from discord.ext import commands
 from discord.commands import Option
 from CreateContets import CreateContets
+from VoiceVox import Voicevox
 import openai
 import asyncio
-
+import discord
 #環境変数取得用
 import os
 openai.api_key=os.environ.get('OPENAI_TOKEN')
@@ -15,6 +16,7 @@ class ChatAI(commands.Cog):
  def __init__(self, bot):
   self.bot = bot  
   self.creater=CreateContets()
+  self.vox=Voicevox()
 
   self.prompt = "「ずんだもん」という名前の可愛い女の子のキャラクターがいる。そのキャラは語尾が「なのだ」、一人称は「ぼく」が特徴のキャラクターだ。自己紹介は不要です。この文以降の返信をしてほしい、だが前述のキャラクターになりきって返信して。"
   self.temperature = 0.5
@@ -42,7 +44,7 @@ class ChatAI(commands.Cog):
  async def talk_ai(self,ctx,
                    message:Option(str, 'メッセージ')
                    ):
-  respond=await ctx.respond("process...", delete_after=0)
+  await ctx.respond("process...", delete_after=0)
   emb=self.creater.set_embed(ctx,str(ctx.author.name)+"が送信したメッセージ["+message+"]への返信を考えているよ","a","ジージー...ッガガガ...通信中なのだ...","https://i.gyazo.com/f493aff882c43bea1b494cb1a2cf9e97.png")
   sent_message=await ctx.send(embed=emb)
   sent_id=sent_message.id
@@ -67,3 +69,10 @@ class ChatAI(commands.Cog):
   message_obj=await ctx.channel.fetch_message(message_id)
   await message_obj.delete()
   await ctx.send(embed=emb)
+
+  if ctx.author.voice is None:
+   return
+  if ctx.guild.voice_client is None:
+   await ctx.author.voice.channel.connect()
+  voice=self.vox.speak(text=reply)
+  ctx.voice_client.play(discord.PCMAudio(voice))

@@ -1,12 +1,13 @@
  # -*- coding: Shift-JIS -*-
 
 import sys
-
+import discord
 from discord.ext import commands
 from Checker import Checker
 from discord.commands import Option
 from CreateContets import CreateContets
 from SetupDiscordBot import SetupBot
+from VoiceVox import Voicevox
 
 class System(commands.Cog):
  all_text_ch_id=[str(0)]
@@ -14,7 +15,7 @@ class System(commands.Cog):
   self.bot = bot
   self.creater=CreateContets()
   self.checker=Checker()
-
+  self.vox=Voicevox()
 
  @commands.slash_command(name='z_bot_close', description='終了します。bot作成者以外実行不可')
  async def this_end(self,ctx):
@@ -41,6 +42,12 @@ class System(commands.Cog):
    await message_obj.delete()
    dm=await ctx.author.create_dm()
    await dm.send('ぶりっ')
+   if ctx.author.voice is None:
+    return
+   if ctx.guild.voice_client is None:
+    await ctx.author.voice.channel.connect()
+   voice=self.vox.speak(text='うんこします')
+   ctx.voice_client.play(discord.PCMAudio(voice))
 
 
  @commands.slash_command(name='z_embed', description='embedを作成')
