@@ -61,7 +61,7 @@ class ChatAI(commands.Cog):
                                       model="gpt-3.5-turbo",
                                       messages=self.messages_history
                                       )
-  #await ctx.respond(message+'サーバー名します')
+ 
   reply=str(response['choices'][0]['message']['content'])
   obj={"role":"assistant","content":reply}
   self.add_messages_history(obj)
@@ -74,5 +74,6 @@ class ChatAI(commands.Cog):
    return
   if ctx.guild.voice_client is None:
    await ctx.author.voice.channel.connect()
-  voice=self.vox.speak(text=reply)
-  ctx.voice_client.play(discord.PCMAudio(voice))
+
+  voice=self.vox.speak(reply)
+  ctx.voice_client.play(discord.FFmpegPCMAudio(voice))

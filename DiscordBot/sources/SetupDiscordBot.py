@@ -27,4 +27,4 @@ class SetupBot():
   for cogs in self.cog_list:
    self.bot.add_cog(cogs(self.bot))
   self.cog_list.clear()
-  self.bot.run(os.environ.get('DISCORD_TOKEN'))
+  self.bot.run(TOKEN_D)

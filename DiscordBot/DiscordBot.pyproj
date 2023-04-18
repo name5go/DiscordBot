@@ -32,6 +32,7 @@
     <Compile Include="sources\BotMain.py" />
     <Compile Include="sources\SetupDiscordBot.py" />
     <Compile Include="sources\CommandsSystem.py" />
+    <Compile Include="sources\CtrlVoiceChat.py" />
     <Compile Include="sources\VoiceVox.py" />
   </ItemGroup>
   <ItemGroup>

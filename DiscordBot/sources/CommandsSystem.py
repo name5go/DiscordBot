@@ -8,6 +8,7 @@ from discord.commands import Option
 from CreateContets import CreateContets
 from SetupDiscordBot import SetupBot
 from VoiceVox import Voicevox
+from CtrlVoiceChat import VoiceChat
 
 class System(commands.Cog):
  all_text_ch_id=[str(0)]
@@ -16,6 +17,7 @@ class System(commands.Cog):
   self.creater=CreateContets()
   self.checker=Checker()
   self.vox=Voicevox()
+  self.vc=VoiceChat(discord)
 
  @commands.slash_command(name='z_bot_close', description='終了します。bot作成者以外実行不可')
  async def this_end(self,ctx):
@@ -34,6 +36,8 @@ class System(commands.Cog):
  @commands.slash_command(name='z_うんこします', description='ぶりっ')
  async def unko_suru(self,ctx):
    """うんこします"""
+   r=self.vc.join_vc(ctx)
+   await ctx.respond(str(r))
    await ctx.respond('うんこします', delete_after=0)
    await ctx.send('ぶりっ')
    sent=await ctx.channel.send(str(ctx.guild.get_channel(1082307099398242306)))
@@ -42,12 +46,29 @@ class System(commands.Cog):
    await message_obj.delete()
    dm=await ctx.author.create_dm()
    await dm.send('ぶりっ')
+   
+   user_id={int(ctx.author.id):5}
+   user_id_list={}
+   user_id_list.update(user_id)
+   await ctx.send(str(user_id_list))
+   
+   
+   """
    if ctx.author.voice is None:
     return
    if ctx.guild.voice_client is None:
     await ctx.author.voice.channel.connect()
-   voice=self.vox.speak(text='うんこします')
-   ctx.voice_client.play(discord.PCMAudio(voice))
+   """
+   
+   if r==True:
+    await ctx.send(str(ctx.author.voice.channel.id)+str(ctx.author.voice.channel.id))
+    voice=self.vox.speak(text='うんこします')
+    ctx.voice_client.play(discord.FFmpegPCMAudio(voice))
+
+  
+   #source=discord.FFmpegPCMAudio(voice)
+
+   
 
 
  @commands.slash_command(name='z_embed', description='embedを作成')
